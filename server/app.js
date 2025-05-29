@@ -1,11 +1,12 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const ITEMS_COUNT = 1_000_000;
 const ITEMS = Array.from({ length: ITEMS_COUNT }, (_, i) => ({

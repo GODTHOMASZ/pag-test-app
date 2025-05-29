@@ -1,6 +1,8 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 class ItemStore {
   items = [];
   selectedIds = new Set();
@@ -25,7 +27,7 @@ class ItemStore {
     }
 
     try {
-      const { data } = await axios.get('http://localhost:3001/items', {
+      const { data } = await axios.get(`${API_URL}/items`, {
         params: {
           q: this.search,
           offset: this.offset,
@@ -59,7 +61,7 @@ class ItemStore {
 
   async loadState() {
     try {
-      const { data } = await axios.get('http://localhost:3001/state');
+      const { data } = await axios.get(`${API_URL}/state`);
       runInAction(() => {
         this.selectedIds = new Set(data.selectedIds);
         this.sortedIds = data.sortedIds;
@@ -71,7 +73,7 @@ class ItemStore {
 
   async saveState() {
     try {
-      await axios.post('http://localhost:3001/state', {
+      await axios.post(`${API_URL}/state`, {
         selectedIds: Array.from(this.selectedIds),
         sortedIds: this.sortedIds,
       });
