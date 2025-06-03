@@ -1,5 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import axios from 'axios';
+import debounce from 'lodash.debounce';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -14,6 +15,7 @@ class ItemStore {
 
   constructor() {
     makeAutoObservable(this);
+    this.debouncedLoadItems = debounce(() => this.loadItems(true), 400);
   }
 
   async loadItems(reset = false) {
@@ -84,7 +86,7 @@ class ItemStore {
 
   setSearch(q) {
     this.search = q;
-    this.loadItems(true);
+    this.debouncedLoadItems();
   }
 
   reorder(fromIndex, toIndex) {
