@@ -38,11 +38,17 @@ class ItemStore {
       });
 
       runInAction(() => {
-        if (reset) {
-          this.items = data;
-        } else {
-          this.items.push(...data);
-        }
+        const newItems = reset ? data : [...this.items, ...data];
+
+        const selectedItemsMap = new Map(newItems.map(item => [item.id, item]));
+
+        const sortedSelected = this.sortedIds
+          .map(id => selectedItemsMap.get(id))
+          .filter(Boolean);
+
+        const remaining = newItems.filter(item => !this.sortedIds.includes(item.id));
+
+        this.items = [...sortedSelected, ...remaining];
         this.offset += 20;
         this.hasMore = data.length === 20;
       });
@@ -56,9 +62,13 @@ class ItemStore {
   }
 
   toggleSelect(id) {
-    this.selectedIds.has(id)
-      ? this.selectedIds.delete(id)
-      : this.selectedIds.add(id);
+    if (this.selectedIds.has(id)) {
+      this.selectedIds.delete(id);
+      this.sortedIds = this.sortedIds.filter((x) => x !== id);
+    } else {
+      this.selectedIds.add(id);
+      this.sortedIds.push(id);
+    }
   }
 
   async loadState() {

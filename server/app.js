@@ -41,10 +41,15 @@ app.get('/items', (req, res) => {
 
 app.post('/state', (req, res) => {
   const { selectedIds, sortedIds } = req.body;
+
+  const selectedSet = new Set(selectedIds);
+  const filteredSortedIds = sortedIds.filter(id => selectedSet.has(id));
+
   userState = {
-    selectedIds: new Set(selectedIds),
-    sortedIds,
+    selectedIds: selectedSet,
+    sortedIds: filteredSortedIds,
   };
+
   res.sendStatus(200);
 });
 
